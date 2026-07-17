@@ -12,11 +12,11 @@ function requireStudent(req, res, next) {
   next();
 }
 
-router.use(authMiddleware);
-router.use(requireStudent);
+// Middlewares are applied to individual routes to prevent conflicts on shared path prefixes
+
 
 // POST /api/classes/join - Join a class using classCode
-router.post("/classes/join", async (req, res) => {
+router.post("/classes/join", authMiddleware, requireStudent, async (req, res) => {
   try {
     const { classCode } = req.body;
     if (!classCode || classCode.trim() === "") {
@@ -75,7 +75,7 @@ router.post("/classes/join", async (req, res) => {
 });
 
 // GET /api/my-attendance - View student's personal attendance history
-router.get("/my-attendance", async (req, res) => {
+router.get("/my-attendance", authMiddleware, requireStudent, async (req, res) => {
   try {
     // 1. Find all classes the student is enrolled in
     const classesParams = {
@@ -138,7 +138,7 @@ router.get("/my-attendance", async (req, res) => {
 });
 
 // GET /api/student/classes - Get list of classes the student is enrolled in
-router.get("/student/classes", async (req, res) => {
+router.get("/student/classes", authMiddleware, requireStudent, async (req, res) => {
   try {
     const params = {
       TableName: TABLES.CLASSES,

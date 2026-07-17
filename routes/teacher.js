@@ -23,11 +23,11 @@ function requireTeacher(req, res, next) {
   next();
 }
 
-router.use(authMiddleware);
-router.use(requireTeacher);
+// Middlewares are applied to individual routes to prevent conflicts on shared path prefixes
+
 
 // POST /api/classes - Create a new class
-router.post("/classes", async (req, res) => {
+router.post("/classes", authMiddleware, requireTeacher, async (req, res) => {
   try {
     const { className } = req.body;
     if (!className || className.trim() === "") {
@@ -61,7 +61,7 @@ router.post("/classes", async (req, res) => {
 });
 
 // GET /api/classes - Get all classes created by this teacher
-router.get("/classes", async (req, res) => {
+router.get("/classes", authMiddleware, requireTeacher, async (req, res) => {
   try {
     const params = {
       TableName: TABLES.CLASSES,
@@ -79,7 +79,7 @@ router.get("/classes", async (req, res) => {
 });
 
 // GET /api/classes/:id - Get class details (and list of enrolled students)
-router.get("/classes/:id", async (req, res) => {
+router.get("/classes/:id", authMiddleware, requireTeacher, async (req, res) => {
   try {
     const classId = req.params.id;
 
@@ -130,7 +130,7 @@ router.get("/classes/:id", async (req, res) => {
 });
 
 // POST /api/attendance - Save attendance session for a class
-router.post("/attendance", async (req, res) => {
+router.post("/attendance", authMiddleware, requireTeacher, async (req, res) => {
   try {
     const { classId, date, records } = req.body;
 
@@ -179,7 +179,7 @@ router.post("/attendance", async (req, res) => {
 });
 
 // GET /api/attendance/:classId - View attendance history for a specific class
-router.get("/attendance/:classId", async (req, res) => {
+router.get("/attendance/:classId", authMiddleware, requireTeacher, async (req, res) => {
   try {
     const { classId } = req.params;
 
