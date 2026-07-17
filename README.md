@@ -57,6 +57,11 @@ Create the following **3 DynamoDB Tables** in your AWS Console (ensure the regio
 
 *(Note: The server uses simple Scan operations for authentication and joins to minimize complex GSI configuration steps. For higher scales, consider adding Global Secondary Indexes on `email` and `classCode`).*
 
+#### DynamoDB Tables Preview:
+| Users Table | Attendance Table |
+|---|---|
+| ![Users Table](assets/users%20table.png) | ![Attendance Table](assets/attendance%20table.png) |
+
 ### 2. Local Setup and Running
 To run the project locally on your machine:
 
@@ -84,6 +89,8 @@ To run the project locally on your machine:
 ## 🚀 AWS CI/CD Pipeline Configuration
 
 This application is fully automated to deploy updates on every git commit.
+
+![AWS CodePipeline](assets/pipeline.png)
 
 ### Step 1: Prepare the EC2 Instance
 1.  Launch an **Ubuntu Server** on EC2.
@@ -136,3 +143,22 @@ SSH into your EC2 instance and configure Nginx to route external requests on por
 3.  **Build Stage**: Skip this stage (we do not need to build static compilation files for our vanilla Node.js architecture).
 4.  **Deploy Stage**: Choose **AWS CodeDeploy**, select the application name, and select the deployment group created in Step 3.
 5.  Complete the setup and release your pipeline! Now, any push to the `main` branch will automatically deploy your code onto your EC2 server in real-time.
+
+---
+
+## 📸 Project Screenshots
+
+### Authentication & Landing Page
+| Login | Registration |
+|---|---|
+| ![Login Page](assets/login.png) | ![Registration Page](assets/register.png) |
+
+### User Dashboards
+| Teacher Dashboard | Student Dashboard |
+|---|---|
+| ![Teacher Dashboard](assets/teacher-home.png) | ![Student Dashboard](assets/student%20home.png) |
+
+### Class Operations
+| Create Class Modal |
+|---|
+| ![Create Class Modal](assets/create%20class.png) |
