@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance System | AWS CI/CD Demo</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Toast Notification -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Header Navigation -->
+    <header class="navbar hidden" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fa-solid fa-graduation-cap logo-icon"></i>
+                <span class="brand-text">RollCall</span>
+            </div>
+            <div class="nav-user">
+                <span id="user-info" class="user-info">
+                    <span class="user-avatar" id="user-avatar"></span>
+                    <span id="user-name">Loading...</span>
+                    <span id="user-role" class="role-badge">Student</span>
+                </span>
+                <button id="logout-btn" class="btn btn-outline btn-sm">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-content" id="main-content">
+
+        <!-- 1. LANDING & AUTH VIEW -->
+        <section id="auth-view" class="auth-view">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <i class="fa-solid fa-graduation-cap auth-logo"></i>
+                    <h2>Welcome to RollCall</h2>
+                    <p>Attendance Management Made Simple</p>
+                </div>
+
+                <!-- Toggle Buttons -->
+                <div class="auth-toggle">
+                    <button id="toggle-login" class="toggle-btn active">Login</button>
+                    <button id="toggle-register" class="toggle-btn">Register</button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="fa-regular fa-envelope input-icon"></i>
+                            <input type="email" id="login-email" required placeholder="Enter your email">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="login-password" required placeholder="Enter password">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fa-solid fa-right-to-bracket"></i> Login
+                    </button>
+                </form>
+
+                <!-- Register Form -->
+                <form id="register-form" class="auth-form hidden">
+                    <div class="form-group">
+                        <label for="reg-name">Full Name</label>
+                        <div class="input-wrapper">
+                            <i class="fa-regular fa-user input-icon"></i>
+                            <input type="text" id="reg-name" required placeholder="Enter full name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="fa-regular fa-envelope input-icon"></i>
+                            <input type="email" id="reg-email" required placeholder="Enter your email">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Password</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="reg-password" required placeholder="Create password (min 6 chars)">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Account Role</label>
+                        <div class="role-selector">
+                            <label class="role-option">
+                                <input type="radio" name="reg-role" value="student" checked>
+                                <span class="role-card">
+                                    <i class="fa-solid fa-user-graduate"></i>
+                                    <span>Student</span>
+                                </span>
+                            </label>
+                            <label class="role-option">
+                                <input type="radio" name="reg-role" value="teacher">
+                                <span class="role-card">
+                                    <i class="fa-solid fa-chalkboard-user"></i>
+                                    <span>Teacher</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fa-solid fa-user-plus"></i> Create Account
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 2. TEACHER DASHBOARD VIEW -->
+        <section id="teacher-dashboard" class="dashboard-view hidden">
+            <div class="dashboard-header-block">
+                <div>
+                    <h1>Teacher Dashboard</h1>
+                    <p class="subtitle">Manage your classes and record attendance sessions.</p>
+                </div>
+                <button id="btn-new-class" class="btn btn-primary">
+                    <i class="fa-solid fa-plus"></i> Create Class
+                </button>
+            </div>
+
+            <!-- Create Class Modal / Card -->
+            <div id="create-class-modal" class="modal hidden">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Create New Class</h3>
+                        <button class="close-btn" id="close-class-modal">&times;</button>
+                    </div>
+                    <form id="create-class-form">
+                        <div class="form-group">
+                            <label for="class-name">Class Name</label>
+                            <input type="text" id="class-name" required placeholder="e.g., Computer Networks, Calculus III">
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-outline" id="cancel-class-modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Create Class</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Classes List -->
+            <div class="section-title">
+                <h2>My Classes</h2>
+            </div>
+            <div id="teacher-classes-grid" class="cards-grid">
+                <!-- Loaded dynamically -->
+                <div class="loading-state">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i> Loading classes...
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. CLASS DETAILS & ATTENDANCE VIEW -->
+        <section id="class-detail-view" class="dashboard-view hidden">
+            <div class="back-nav">
+                <button id="btn-back-classes" class="btn btn-link">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                </button>
+            </div>
+
+            <div class="class-info-card">
+                <div class="class-info-header">
+                    <div>
+                        <h1 id="detail-class-name">Class Name</h1>
+                        <p class="class-code-badge">Code: <strong id="detail-class-code">ABC123</strong></p>
+                    </div>
+                    <div class="class-stats">
+                        <span class="stat-badge">
+                            <i class="fa-solid fa-users"></i> Enrolled: <span id="detail-student-count">0</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tabs-container">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="mark-attendance-tab">
+                        <i class="fa-regular fa-calendar-check"></i> Mark Attendance
+                    </button>
+                    <button class="tab-btn" data-tab="history-tab" id="btn-load-history">
+                        <i class="fa-solid fa-history"></i> Attendance History
+                    </button>
+                </div>
+
+                <div class="tab-content active" id="mark-attendance-tab">
+                    <div class="attendance-setup-bar">
+                        <div class="form-group inline-group">
+                            <label for="attendance-date">Date:</label>
+                            <input type="date" id="attendance-date" required>
+                        </div>
+                        <button id="btn-save-attendance" class="btn btn-success">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Attendance
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table" id="students-table">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Email</th>
+                                    <th class="text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="students-list-body">
+                                <!-- Enrolled students dynamically loaded -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="no-students-placeholder" class="empty-state hidden">
+                        <i class="fa-regular fa-face-frown"></i>
+                        <p>No students enrolled yet. Share the class code above with your students.</p>
+                    </div>
+                </div>
+
+                <div class="tab-content hidden" id="history-tab">
+                    <div class="history-list" id="history-records-container">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. STUDENT DASHBOARD VIEW -->
+        <section id="student-dashboard" class="dashboard-view hidden">
+            <div class="dashboard-header-block">
+                <div>
+                    <h1>Student Dashboard</h1>
+                    <p class="subtitle">Join classes and view your attendance records.</p>
+                </div>
+                <div class="join-class-bar">
+                    <input type="text" id="join-class-code" placeholder="Enter Class Code" maxlength="6">
+                    <button id="btn-join-class" class="btn btn-primary">
+                        <i class="fa-solid fa-circle-plus"></i> Join Class
+                    </button>
+                </div>
+            </div>
+
+            <!-- Student Content Tabs -->
+            <div class="tabs-container">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="student-classes-tab">
+                        <i class="fa-solid fa-graduation-cap"></i> My Classes
+                    </button>
+                    <button class="tab-btn" data-tab="student-attendance-tab" id="btn-load-student-attendance">
+                        <i class="fa-regular fa-clipboard"></i> My Attendance History
+                    </button>
+                </div>
+
+                <!-- Tab: Student Classes -->
+                <div class="tab-content active" id="student-classes-tab">
+                    <div id="student-classes-grid" class="cards-grid">
+                        <div class="loading-state">
+                            <i class="fa-solid fa-circle-notch fa-spin"></i> Loading joined classes...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Student Attendance Records -->
+                <div class="tab-content hidden" id="student-attendance-tab">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Class Name</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-attendance-body">
+                                <!-- Enrolled student attendance loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="student-attendance-empty" class="empty-state hidden">
+                        <i class="fa-regular fa-calendar-times"></i>
+                        <p>No attendance history recorded yet.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 RollCall Attendance System. Built with AWS &amp; CI/CD.</p>
+    </footer>
+
+    <!-- Frontend logic -->
+    <script src="app.js"></script>
+</body>
+</html>
